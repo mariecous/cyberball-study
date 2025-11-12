@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cyberball - version interactive</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f2f2f2; }
+    canvas { border: 2px solid #444; background: #fff; margin-top: 20px; }
+    .hidden { display: none; }
+    button { margin: 10px; padding: 10px 20px; font-size: 16px; border-radius: 8px; border: none; background: #007bff; color: white; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h1>Jeu de lancer de balle</h1>
+<p id="instructions">Vous allez jouer avec deux autres participants virtuels. Cliquez sur "Commencer" pour débuter.</p>
+<button id="startBtn">Commencer</button>
+
+<canvas id="gameCanvas" width="600" height="400" class="hidden"></canvas>
+
+<div id="questionnaire" class="hidden">
+  <h2>Questionnaire rapide</h2>
+  <p>1. Je me suis senti(e) exclu(e) pendant le jeu :</p>
+  <input type="range" id="q1" min="1" max="7" value="4"><br>
+  <p>2. J’ai ressenti de la détresse pendant le jeu :</p>
+  <input type="range" id="q2" min="1" max="7" value="4"><br>
+  <p>3. Je pense que les autres joueurs m’appréciaient :</p>
+  <input type="range" id="q3" min="1" max="7" value="4"><br>
+  <button id="finishBtn">Terminer</button>
+</div>
+
+<div id="debrief" class="hidden">
+  <h2>Débriefing</h2>
+  <p>Merci pour votre participation ! Ce jeu simulait une inclusion ou exclusion sociale de manière aléatoire.
+  Aucun autre participant réel n’était impliqué.</p>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const startBtn = document.getElementById("startBtn");
+const questionnaire = document.getElementById("questionnaire");
+const finishBtn = document.getElementById("finishBtn");
+const debrief = document.getElementById("debrief");
+
+const players = [
+  { x: 100, y: 200, name: "Joueur 1" },
+  { x: 300, y: 60, name: "Vous", isSelf: true },
+  { x: 500, y: 200, name: "Joueur 2" }
+];
+
+let ball = { x: players[0].x, y: players[0].y };
+let hasBall = false;
+let current = 0;
+let throws = 0;
+const TOTAL_THROWS = 20;
+const EXCLUSION_RATE = 0.8; // 0 = inclusion, 0.8 = exclusion (rarement la balle)
+
+function drawPlayers() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  players.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 35, 0, 2*Math.PI);
+    ctx.fillStyle = p.isSelf ? "#007bff" : "#777";
+    ctx.fill();
+    ctx.fillStyle = "white";
+    ctx.font = "14px sans-serif";
+    ctx.fillText(p.name, p.x - 25, p.y + 5);
+  });
+  // balle
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, 10, 0, 2*Math.PI);
+  ctx.fillStyle = "red";
+  ctx.fill();
+}
+
+function throwBall(from, to, callback) {
+  const steps = 30;
+  let t = 0;
+  const dx = (players[to].x - players[from].x)/steps;
+  const dy = (players[to].y - players[from].y)/steps;
+  const interval = setInterval(() => {
+    ball.x += dx;
+    ball.y += dy;
+    drawPlayers();
+    t++;
+    if (t >= steps) {
+      clearInterval(interval);
+      current = to;
+      callback();
+    }
+  }, 30);
+}
+
+function nextThrow() {
+  throws++;
+  if (throws > TOTAL_THROWS) {
+    canvas.classList.add("hidden");
+    questionnaire.classList.remove("hidden");
+    return;
+  }
+
+  // si c’est à l’utilisateur
+  if (players[current].isSelf) {
+    hasBall = true;
+  } else {
+    hasBall = false;
+    // déterminer si les bots te passent la balle ou pas
+    const passToYou = Math.random() > EXCLUSION_RATE;
+    let to;
+    if (passToYou) {
+      to = 1; // toi
+    } else {
+      to = current === 0 ? 2 : 0; // entre eux
+    }
+    throwBall(current, to, () => {
+      current = to;
+      if (players[to].isSelf) {
+        hasBall = true;
+      }
+      setTimeout(nextThrow, hasBall ? 0 : 800);
+    });
+  }
+}
+
+// clic pour lancer la balle
+canvas.addEventListener("click", e => {
+  if (!hasBall) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  // trouver joueur le plus proche du clic
+  let clicked = null;
+  players.forEach((p, i) => {
+    if (!p.isSelf) {
+      const dist = Math.hypot(p.x - x, p.y - y);
+      if (dist < 40) clicked = i;
+    }
+  });
+  if (clicked !== null) {
+    hasBall = false;
+    throwBall(1, clicked, () => {
+      current = clicked;
+      setTimeout(nextThrow, 800);
+    });
+  }
+});
+
+startBtn.onclick = () => {
+  startBtn.classList.add("hidden");
+  canvas.classList.remove("hidden");
+  drawPlayers();
+  setTimeout(() => nextThrow(), 1000);
+};
+
+finishBtn.onclick = () => {
+  questionnaire.classList.add("hidden");
+  debrief.classList.remove("hidden");
+};
+</script>
+
+</body>
+</html>
