@@ -54,7 +54,7 @@ let hasBall = false;
 let current = 0;
 let throws = 0;
 const TOTAL_THROWS = 20;
-const EXCLUSION_RATE = 50; // 0 = inclusion, 0.8 = exclusion (rarement la balle)
+const EXCLUSION_RATE = 0.5; // 0 = inclusion, 0.8 = exclusion (rarement la balle)
 
 function drawPlayers() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -161,4 +161,5 @@ finishBtn.onclick = () => {
 
 </body>
 </html>
+
 
