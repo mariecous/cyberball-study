@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cyberball - version interactive</title>
+ <meta charset="utf-8" />
+  <title>Cyberball - version interactive (avec avatars)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: sans-serif; text-align: center; background: #f2f2f2; }
-    canvas { border: 2px solid #444; background: #fff; margin-top: 20px; }
+    body { font-family: "Helvetica Neue", Arial, sans-serif; text-align: center; background: #f2f2f2; margin: 0; padding: 20px; }
+    #container { max-width: 900px; margin: 0 auto; }
+    canvas { border: 2px solid #444; background: #fff; margin-top: 20px; display:block; margin-left:auto; margin-right:auto; }
     .hidden { display: none; }
     button { margin: 10px; padding: 10px 20px; font-size: 16px; border-radius: 8px; border: none; background: #007bff; color: white; cursor: pointer; }
+    #loading { margin-top: 20px; padding: 30px; background: #fff; display: inline-block; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    #status { font-size: 14px; color:#555; margin-top:8px; }
+    #questionnaire { margin-top: 20px; background: #fff; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    label { display:block; margin-top:10px; text-align:left; }
+    input[type="range"] { width: 300px; }
+    #debrief { margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -15,7 +23,12 @@
 <h1>CYBERBALL</h1>
 <p id="instructions">Vous allez jouer avec deux autres participants virtuels. Cliquez sur "Commencer" pour débuter.</p>
 <button id="startBtn">Commencer</button>
-
+  
+<div id="loading" class="hidden" role="status" aria-live="polite">
+      <h3>Recherche des autres joueurs en ligne...</h3>
+      <div id="status">Connexion en cours<span id="dots">...</span></div>
+    </div>
+  
 <canvas id="gameCanvas" width="600" height="400" class="hidden"></canvas>
 
 <div id="questionnaire" class="hidden">
@@ -74,7 +87,7 @@ function drawPlayers() {
 }
 
 function throwBall(from, to, callback) {
-  const steps = 30;
+  const steps = 50;
   let t = 0;
   const dx = (players[to].x - players[from].x)/steps;
   const dy = (players[to].y - players[from].y)/steps;
@@ -88,7 +101,7 @@ function throwBall(from, to, callback) {
       current = to;
       callback();
     }
-  }, 30);
+  }, 50);
 }
 
 function nextThrow() {
@@ -160,6 +173,7 @@ finishBtn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
