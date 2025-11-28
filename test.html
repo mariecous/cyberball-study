@@ -48,52 +48,129 @@
 
 <canvas id="canvas" width="600" height="420" class="hidden"></canvas>
 
-<div id="questionnaire" class="hidden">
+
+<div id="questionnaire" style="text-align:left;" class="hidden">
   <h2>Questionnaire rapide</h2>
-   <p>Appartenance</p>
-  <p>1. J'ai eu l'impression de faire un avec les autres joueurs :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>2. J'ai eu le sentiment d'appartenir au groupe pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>3. Je ne me suis pas senti(e) accepté(e) par les autres joueurs :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>4. Pendant le jeu, je me suis senti(e) connecté(e) à un ou plusieurs autres joueur :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>5. Je me suis senti(e) comme un(e) exclu(e) [ou "mis(e) à l'écart"] pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-   <p>Estime de soi</p>
-  <p>6. Jouer à ce jeu m'a fait me sentir peu sûr(e) de moi [ou "en insécurité"] :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>7. J'ai eu le sentiment d'avoir échoué pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>8. J'ai eu l'idée que j'avais la même valeur que les autres joueurs :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>9. J'étais préoccupé(e) par ce que les autres joueurs pensaient de moi pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>10. J'ai eu le sentiment que les autres joueurs ne m'appréciaient pas :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-   <p>Contrôle</p>
-  <p>11. J'avais le sentiment que je pouvais lancer [la balle/l'objet] aux autres joueurs aussi souvent que je le voulais :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>12. Je me sentais en contrôle du jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>13. J'avais l'idée que j'avais une incidence sur le déroulement du jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>14. J'avais le sentiment de pouvoir influencer la direction du jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>15. J'avais le sentiment que les autres joueurs décidaient de tout :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-   <p>Existence significative</p>
-  <p>16. Pendant le jeu, j'avais l'impression que ma présence n'était pas significative [ou "n'avait pas de sens"] :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>17. Je pense qu'il était inutile que je participe au jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>18. J'avais le sentiment que ma présence pendant le jeu était importante :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>19. Je pense que ma participation au jeu a été utile :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>20. J'ai cru que ma contribution au jeu ne comptait pas :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p><strong>Consigne :</strong> Veuillez indiquer votre degré d’accord avec chaque affirmation.
+  <br>1 = Pas d’accord  7 = D’accord</p>
+
+  <div class="question">
+    <p>1. J'ai eu l'impression de faire un avec les autres joueurs :</p>
+    <input id="q1" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>2. J'ai eu le sentiment d'appartenir au groupe pendant le jeu :</p>
+    <input id="q2" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>3. Je ne me suis pas senti(e) accepté(e) par les autres joueurs :</p>
+    <input id="q3" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>4. Pendant le jeu, je me suis senti(e) connecté(e) à un ou plusieurs autres joueurs :</p>
+    <input id="q4" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>5. Je me suis senti(e) comme un(e) exclu(e) pendant le jeu :</p>
+    <input id="q5" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>6. Jouer à ce jeu m'a fait me sentir peu sûr(e) de moi :</p>
+    <input id="q6" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>7. J'ai eu le sentiment d'avoir échoué pendant le jeu :</p>
+    <input id="q7" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>8. J'ai eu l'idée que j'avais la même valeur que les autres joueurs :</p>
+    <input id="q8" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>9. J'étais préoccupé(e) par ce que les autres joueurs pensaient de moi pendant le jeu :</p>
+    <input id="q9" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>10. J'ai eu le sentiment que les autres joueurs ne m'appréciaient pas :</p>
+    <input id="q10" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>11. J'avais le sentiment que je pouvais lancer l'objet aux autres joueurs autant que je le voulais :</p>
+    <input id="q11" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>12. Je me sentais en contrôle du jeu :</p>
+    <input id="q12" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>13. J'avais l'idée que j'avais une incidence sur le déroulement du jeu :</p>
+    <input id="q13" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>14. J'avais le sentiment de pouvoir influencer la direction du jeu :</p>
+    <input id="q14" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>15. J'avais le sentiment que les autres joueurs décidaient de tout :</p>
+    <input id="q15" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>16. Pendant le jeu, j'avais l'impression que ma présence n'était pas significative :</p>
+    <input id="q16" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>17. Je pense qu'il était inutile que je participe au jeu :</p>
+    <input id="q17" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>18. J'avais le sentiment que ma présence pendant le jeu était importante :</p>
+    <input id="q18" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>19. Je pense que ma participation au jeu a été utile :</p>
+    <input id="q19" type="range" min="1" max="7" value="4">
+    <div class="poles">1 | 7</div>
+  </div>
+
+  <div class="question">
+    <p>20. J'ai cru que ma contribution au jeu ne comptait pas :</p>
+    <input id="q20" type="range" min="1" max="7" value="4">
   
   <button id="finishBtn">Terminer</button>
 </div>
@@ -536,4 +613,5 @@ finishBtn.onclick = () => {
 </body>
 
 </html>
+
 
