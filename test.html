@@ -34,7 +34,7 @@
 <body>
 
 <h1 id="title">CYBERBALL</h1>
-<p id="instructions">Vous allez jouer avec deux autres participants virtuels.<br>Cliquez sur “Commencer”.</p>
+<p id="instructions">Nous vous remercions de votre participation à cette expérience scientifique. Notez que toutes les données récoltées durant cette session seront traitées de manière strictement anonyme et confidentielle<br>Vous allez maintenant prendre part à un exercice de visualisation mentale sous la forme d'un jeu de balle virtuel. Vous jouerez avec deux autres participants connectés à distance. Lorsque vous recevez la balle, relancez-la simplement à la personne de votre choix en cliquant sur son avatar.<br>Pendant toute la durée du jeu, essayez de vous représenter mentalement la situation. Une fois la partie terminée, il vous sera demandé de répondre à un court questionnaire.<br>Cliquez sur “Commencer”.</p>
 <button id="startBtn">Commencer</button>
 
 <div id="playerSelect" class="hidden">
@@ -50,12 +50,51 @@
 
 <div id="questionnaire" class="hidden">
   <h2>Questionnaire rapide</h2>
-  <p>1. Je me suis senti(e) exclu(e) pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="11" value="4"><br>
-  <p>2. J’ai ressenti de la détresse pendant le jeu :</p>
-  <input id="q2" type="range" min="1" max="11" value="4"><br>
-  <p>3. Je pense que les autres joueurs m’appréciaient :</p>
-  <input id="q3" type="range" min="1" max="11" value="4"><br>
+   <p>Appartenance</p>
+  <p>1. J'ai eu l'impression de faire un avec les autres joueurs :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>2. J'ai eu le sentiment d'appartenir au groupe pendant le jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>3. Je ne me suis pas senti(e) accepté(e) par les autres joueurs :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>4. Pendant le jeu, je me suis senti(e) connecté(e) à un ou plusieurs autres joueur :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>5. Je me suis senti(e) comme un(e) exclu(e) [ou "mis(e) à l'écart"] pendant le jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+   <p>Estime de soi</p>
+  <p>6. Jouer à ce jeu m'a fait me sentir peu sûr(e) de moi [ou "en insécurité"] :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>7. J'ai eu le sentiment d'avoir échoué pendant le jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>8. J'ai eu l'idée que j'avais la même valeur que les autres joueurs :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>9. J'étais préoccupé(e) par ce que les autres joueurs pensaient de moi pendant le jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>10. J'ai eu le sentiment que les autres joueurs ne m'appréciaient pas :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+   <p>Contrôle</p>
+  <p>11. J'avais le sentiment que je pouvais lancer [la balle/l'objet] aux autres joueurs aussi souvent que je le voulais :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>12. Je me sentais en contrôle du jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>13. J'avais l'idée que j'avais une incidence sur le déroulement du jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>14. J'avais le sentiment de pouvoir influencer la direction du jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>15. J'avais le sentiment que les autres joueurs décidaient de tout :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+   <p>Existence significative</p>
+  <p>16. Pendant le jeu, j'avais l'impression que ma présence n'était pas significative [ou "n'avait pas de sens"] :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>17. Je pense qu'il était inutile que je participe au jeu :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>18. J'avais le sentiment que ma présence pendant le jeu était importante :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>19. Je pense que ma participation au jeu a été utile :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  <p>20. J'ai cru que ma contribution au jeu ne comptait pas :</p>
+  <input id="q1" type="range" min="1" max="7" value="4"><br>
+  
   <button id="finishBtn">Terminer</button>
 </div>
 
@@ -495,4 +534,5 @@ finishBtn.onclick = () => {
 };
 </script>
 </body>
+
 </html>
