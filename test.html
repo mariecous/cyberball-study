@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Cyberball – version animée</title>
+<style>
+  body {
+    font-family: sans-serif;
+    text-align: center;
+    background: #ececec;
+  }
+  canvas {
+    margin-top: 20px;
+    background: white;
+    border: 2px solid #333;
+    cursor: pointer; /* Curseur en pointeur */
+  }
+  .hidden { display: none; }
+  button {
+    padding: 12px 25px;
+    background: #007bff;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+  }
+  #playerSelect h2 {
+    color: #333;
+  }
+</style>
+</head>
+
+<body>
+
+<h1 id="title">CYBERBALL</h1>
+<p id="instructions">Vous allez jouer avec deux autres participants virtuels.<br>Cliquez sur “Commencer”.</p>
+<button id="startBtn">Commencer</button>
+
+<div id="playerSelect" class="hidden">
+  <h2>Choisissez votre personnage</h2>
+</div>
+
+<div id="loading" class="hidden">
+  <h2>Recherche des autres joueurs en ligne…</h2>
+  <p>Veuillez patienter…</p>
+</div>
+
+<canvas id="canvas" width="600" height="420" class="hidden"></canvas>
+
+<div id="questionnaire" class="hidden">
+  <h2>Questionnaire rapide</h2>
+  <p>1. Je me suis senti(e) exclu(e) pendant le jeu :</p>
+  <input id="q1" type="range" min="1" max="11" value="4"><br>
+  <p>2. J’ai ressenti de la détresse pendant le jeu :</p>
+  <input id="q2" type="range" min="1" max="11" value="4"><br>
+  <p>3. Je pense que les autres joueurs m’appréciaient :</p>
+  <input id="q3" type="range" min="1" max="11" value="4"><br>
+  <button id="finishBtn">Terminer</button>
+</div>
+
+<div id="debrief" class="hidden">
+  <h2>Merci pour votre participation !</h2>
+</div>
+
+<script>
+/* -----------------------------------------------------
+  ÉLÉMENTS DU DOM
+----------------------------------------------------- */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const startBtn = document.getElementById("startBtn");
+const instructions = document.getElementById("instructions");
+const playerSelect = document.getElementById("playerSelect");
+const loading = document.getElementById("loading");
+const questionnaire = document.getElementById("questionnaire");
+const finishBtn = document.getElementById("finishBtn");
+const debrief = document.getElementById("debrief");
+
+
+/* -----------------------------------------------------
+  MODIFIÉ: BASE DE DONNÉES DES PERSONNAGES (Style V2)
+  (Noms remplacés par "Personnage X")
+----------------------------------------------------- */
+const allCharacters = [
+  {
+    name: "Personnage 1", // MODIFIÉ
+    skin: "#f2d3b1", hair: "#a66321", shirt: "#f0f0f0",
+    pants: "#555555", extras: { type: "tie", color: "#337" }
+  },
+  {
+    name: "Personnage 2", // MODIFIÉ
+    skin: "#f2d3b1", hair: "#e86a5d", shirt: "#f7d87f",
+    pants: "#f7d87f", extras: { type: "dress" }
+  },
+  {
+    name: "Personnage 3", // MODIFIÉ (Sera Bot 1)
+    skin: "#b88a65", hair: "#4a3c31", shirt: "#7fc8f7",
+    pants: "#666666", extras: null
+  },
+  {
+    name: "Personnage 4", // MODIFIÉ
+    skin: "#9a6a4a", hair: "#4a3c31", shirt: "#ffffff",
+    pants: "#333333", extras: null
+  },
+  {
+    name: "Personnage 5", // MODIFIÉ (Sera Bot 2)
+    skin: "#f2d3b1", hair: "#888888", shirt: "#e86a5d",
+    pants: "#5a4a42", extras: { type: "glasses", color: "#111" }
+  }
+];
+
+/* -----------------------------------------------------
+  CONFIGURATION DU JEU
+----------------------------------------------------- */
+let players = []; 
+const playerPositions = [
+  // MODIFIÉ: Noms des joueurs fixés ici
+  { x: 100, y: 260, isSelf: false, displayName: "Joueur 1" },
+  { x: 300, y: 120, isSelf: true,  displayName: "Vous" },
+  { x: 500, y: 260, isSelf: false, displayName: "Joueur 2" }
+];
+
+let ball = { x: -100, y: -100 }; 
+let etatJeu = "start"; // "start", "select", "loading", "playing", "end"
+let current = 0;
+let hasBall = false;
+let throws = 0;
+const TOTAL_THROWS = 20;
+const EXCLUSION_RATE = 0.5;
+let THROW_DELAY = 1200;
+
+/* -----------------------------------------------------
+  REPRIS: DESSIN DES PERSONNAGES (Style V2 simple)
+----------------------------------------------------- */
+function drawCharacter(p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+
+  const ARM_LENGTH = 28;
+  const HEAD_RADIUS = 18;
+  const BODY_WIDTH = 40;
+  const BODY_HEIGHT = 55;
+
+  // Jambes
+  ctx.fillStyle = p.pants;
+  ctx.fillRect(-BODY_WIDTH / 2 + 2, BODY_HEIGHT - 2, BODY_WIDTH / 2 - 4, 35); 
+  ctx.fillRect(2, BODY_HEIGHT - 2, BODY_WIDTH / 2 - 4, 35); 
+
+  // Torse
+  ctx.fillStyle = p.shirt;
+  ctx.fillRect(-BODY_WIDTH / 2, 0, BODY_WIDTH, BODY_HEIGHT);
+
+  if (p.extras && p.extras.type === "dress") {
+      ctx.fillRect(-BODY_WIDTH / 2, BODY_HEIGHT - 2, BODY_WIDTH, 5);
+  }
+
+  // Tête
+  ctx.fillStyle = p.skin;
+  ctx.beginPath();
+  ctx.arc(0, -HEAD_RADIUS * 1.5, HEAD_RADIUS, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Cheveux
+  ctx.fillStyle = p.hair;
+  ctx.beginPath();
+  ctx.arc(0, -HEAD_RADIUS * 1.6, HEAD_RADIUS - 2, Math.PI, Math.PI * 2);
+  ctx.fill();
+  if (p.name === "Personnage 1") { ctx.fillRect(-5, -HEAD_RADIUS * 2.6, 10, 5); }
+  if (p.name === "Personnage 2") { ctx.fillRect(-18, -HEAD_RADIUS * 2.2, 36, 12); }
+
+  // Extras
+  if (p.extras) {
+    if (p.extras.type === "glasses") {
+      ctx.strokeStyle = p.extras.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(-7, -HEAD_RADIUS * 1.5, 5, 0, Math.PI * 2);
+      ctx.arc(7, -HEAD_RADIUS * 1.5, 5, 0, Math.PI * 2);
+      ctx.moveTo(-2, -HEAD_RADIUS * 1.5);
+      ctx.lineTo(2, -HEAD_RADIUS * 1.5);
+      ctx.stroke();
+    }
+    if (p.extras.type === "tie") {
+      ctx.fillStyle = p.extras.color;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-5, 0);
+      ctx.lineTo(0, 10);
+      ctx.lineTo(5, 0);
+      ctx.fill();
+      ctx.fillRect(-3, 10, 6, 20);
+    }
+  }
+
+  // Bras
+  ctx.strokeStyle = p.shirt; 
+  ctx.lineWidth = 12;
+  
+  // Bras Gauche
+  ctx.save();
+  ctx.translate(-BODY_WIDTH / 2 + 3, 10);
+  ctx.rotate(p.leftArmAngle);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(0, ARM_LENGTH);
+  ctx.stroke();
+  ctx.fillStyle = p.skin;
+  ctx.beginPath();
+  ctx.arc(0, ARM_LENGTH + 3, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Bras Droit
+  ctx.save();
+  ctx.translate(BODY_WIDTH / 2 - 3, 10);
+  ctx.rotate(p.rightArmAngle);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(0, ARM_LENGTH);
+  ctx.stroke();
+  ctx.fillStyle = p.skin;
+  ctx.beginPath();
+  ctx.arc(0, ARM_LENGTH + 3, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+
+  // Nom (MODIFIÉ: Affiche le nom de jeu OU le nom de sélection)
+  let nameToDraw = p.displayName || p.name; // "Vous" ou "Personnage 1"
+  ctx.font = "14px sans-serif";
+  ctx.fillStyle = "#111";
+  ctx.fillText(nameToDraw, p.x - (ctx.measureText(nameToDraw).width / 2), p.y + 110);
+}
+
+/* -----------------------------------------------------
+  DESSIN DE LA SCÈNE
+----------------------------------------------------- */
+function drawScene() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (etatJeu === "playing") {
+    players.forEach(drawCharacter);
+
+    // Balle
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = "orange";
+    ctx.fill();
+  }
+}
+
+/* -----------------------------------------------------
+  CORRIGÉ: DESSIN DE L'ÉCRAN DE SÉLECTION (sur le canvas)
+----------------------------------------------------- */
+function drawSelectionScreen() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  let selectionDisplay = allCharacters.map((char, i) => {
+    return {
+      ...char, 
+      x: 80 + i * 110,
+      y: 180,
+      leftArmAngle: 0.3, 
+      rightArmAngle: -0.3,
+      isSelf: false
+      // Pas de 'displayName' ici, donc 'drawCharacter' utilisera 'p.name'
+    }
+  });
+
+  selectionDisplay.forEach(drawCharacter);
+}
+
+/* -----------------------------------------------------
+  ANIMATION BRAS + LANCER (Style V2)
+----------------------------------------------------- */
+function animateThrow(from, to, callback) {
+  let p = players[from];
+
+  // 1. Préparation (bras en arrière)
+  p.leftArmAngle = -1.2;
+  p.rightArmAngle = -1.2;
+  drawScene();
+
+  setTimeout(() => {
+    // 2. Lancer (un bras en avant)
+    p.leftArmAngle = 1.8; 
+    p.rightArmAngle = -1.0;
+    drawScene();
+
+    // 3. La balle part
+    setTimeout(() => {
+      throwBall(from, to, () => {
+        // 4. Reset
+        p.leftArmAngle = 0.3;
+        p.rightArmAngle = -0.3;
+        drawScene();
+        callback();
+      });
+    }, 100); 
+
+  }, 300); 
+}
+
+/* -----------------------------------------------------
+  ANIMATION DE LA BALLE
+----------------------------------------------------- */
+function throwBall(from, to, callback) {
+  const steps = 30;
+  let t = 0;
+
+  let startX = players[from].x;
+  let startY = players[from].y + 10;
+  ball.x = startX;
+  ball.y = startY;
+
+  let targetX = players[to].x;
+  let targetY = players[to].y + 30;
+
+  let dx = (targetX - startX) / steps;
+  let dy = (targetY - startY) / steps;
+
+  let move = setInterval(() => {
+    ball.x += dx;
+    ball.y += dy;
+    drawScene();
+
+    if (++t >= steps) {
+      clearInterval(move);
+      ball.x = players[to].x;
+      ball.y = players[to].y + 30;
+      current = to;
+      drawScene(); 
+      callback();
+    }
+  }, 28);
+}
+
+/* -----------------------------------------------------
+  LOGIQUE DU JEU
+----------------------------------------------------- */
+function nextThrow() {
+  throws++;
+
+  if (throws > TOTAL_THROWS) {
+    etatJeu = "end";
+    canvas.classList.add("hidden");
+    questionnaire.classList.remove("hidden");
+    return;
+  }
+
+  if (players[current].isSelf) {
+    hasBall = true;
+    return;
+  }
+
+  // Bots
+  hasBall = false;
+
+  const passToYou = Math.random() > EXCLUSION_RATE;
+  let to = passToYou ? 1 : (current === 0 ? 2 : 0);
+
+  animateThrow(current, to, () => {
+    if (to === 1) hasBall = true;
+    setTimeout(nextThrow, hasBall ? 0 : THROW_DELAY);
+  });
+}
+
+/* -----------------------------------------------------
+  FONCTION POUR LANCER LE JEU
+----------------------------------------------------- */
+function lancerJeu(selectedIndex) {
+  etatJeu = "loading";
+  
+  canvas.classList.add("hidden"); // Cacher le canvas (qui montrait la sélection)
+  playerSelect.classList.add("hidden");
+  loading.classList.remove("hidden");
+
+  // Bot 1 = Personnage #3 (index 2)
+  players[0] = {
+    ...playerPositions[0], // Contient x, y, isSelf, et "Joueur 1"
+    ...allCharacters[2],   // Contient le skin
+    leftArmAngle: 0.3,
+    rightArmAngle: -0.3
+  };
+  
+  // Bot 2 = Personnage #5 (index 4)
+  players[2] = {
+    ...playerPositions[2], // "Joueur 2"
+    ...allCharacters[4],   // Skin
+    leftArmAngle: 0.3,
+    rightArmAngle: -0.3
+  };
+
+  // Joueur Humain = Personnage choisi
+  players[1] = {
+    ...playerPositions[1], // "Vous"
+    ...allCharacters[selectedIndex], // Skin choisi
+    leftArmAngle: 0.3,
+    rightArmAngle: -0.3
+  };
+
+  // Démarrer la partie
+  setTimeout(() => {
+    loading.classList.add("hidden");
+    canvas.classList.remove("hidden");
+    
+    etatJeu = "playing";
+    current = 0; 
+    ball.x = players[current].x; 
+    ball.y = players[current].y + 30;
+
+    drawScene();
+    setTimeout(nextThrow, 1000);
+  }, 3000); 
+}
+
+
+/* -----------------------------------------------------
+  CORRIGÉ: GESTION DES CLICS (Sélection + Jeu)
+----------------------------------------------------- */
+canvas.addEventListener("click", e => {
+  const r = canvas.getBoundingClientRect();
+  const x = e.clientX - r.left;
+  const y = e.clientY - r.top;
+
+  // --- Étape 1: Sélection du personnage ---
+  if (etatJeu === "select") {
+    let charClicked = -1;
+    for (let i = 0; i < 5; i++) {
+      let charX = 80 + i * 110;
+      let charY = 180;
+      // Zone de clic simple
+      if (x > charX - 30 && x < charX + 30 && y > charY - 60 && y < charY + 120) {
+        charClicked = i;
+        break;
+      }
+    }
+
+    if (charClicked !== -1) {
+      lancerJeu(charClicked); // Lancer le jeu
+    }
+    return;
+  }
+
+  // --- Étape 2: Lancer la balle pendant le jeu ---
+  if (etatJeu === "playing" && hasBall) {
+    let targetIndex = null;
+    players.forEach((p, i) => {
+      if (!p.isSelf) {
+        if (Math.hypot(p.x - x, p.y - y) < 80) {
+          targetIndex = i;
+        }
+      }
+    });
+
+    if (targetIndex !== null) {
+      hasBall = false;
+      animateThrow(1, targetIndex, () => { // 1 = index joueur humain
+        current = targetIndex;
+        setTimeout(nextThrow, THROW_DELAY);
+      });
+    }
+  }
+});
+
+/* -----------------------------------------------------
+  DÉMARRAGE + UI
+----------------------------------------------------- */
+startBtn.onclick = () => {
+  etatJeu = "select";
+  
+  startBtn.classList.add("hidden");
+  instructions.classList.add("hidden");
+
+  playerSelect.classList.remove("hidden");
+  canvas.classList.remove("hidden"); // On affiche le canvas pour la sélection
+  
+  drawSelectionScreen(); // On dessine les 5 personnages
+};
+
+/* -----------------------------------------------------
+  ENVOI DES RÉPONSES
+----------------------------------------------------- */
+finishBtn.onclick = () => {
+  questionnaire.classList.add("hidden");
+  debrief.classList.remove("hidden");
+
+  const data = { q1: q1.value, q2: q2.value, q3: q3.value, time: new Date().toISOString() };
+  
+  console.log("Envoi des données (simulé) :", data);
+  // fetch("save.php", { ... });
+};
+</script>
+</body>
+</html>
