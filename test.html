@@ -4,34 +4,82 @@
 <meta charset="UTF-8">
 <title>Cyberball – version animée</title>
 <style>
-  body {
-    font-family: sans-serif;
-    text-align: center;
-    background: #ececec;
-  }
-  canvas {
-    margin-top: 20px;
-    background: white;
-    border: 2px solid #333;
-    cursor: pointer; /* Curseur en pointeur */
-  }
+  body { font-family: sans-serif; text-align: center; background: #ececec; }
+  canvas { margin-top: 20px; background: white; border: 2px solid #333; cursor: pointer; }
   .hidden { display: none; }
-  button {
-    padding: 12px 25px;
-    background: #007bff;
-    border: none;
-    border-radius: 10px;
-    font-size: 18px;
-    color: white;
-    cursor: pointer;
-  }
-  #playerSelect h2 {
-    color: #333;
-  }
+  button { padding: 12px 25px; background: #007bff; border: none; border-radius: 10px; font-size: 18px; color: white; cursor: pointer; }
 </style>
 </head>
-
 <body>
+
+<div id="welcome">
+  <h1>Bienvenue dans l'étude Cyberball</h1>
+  <p id="instructions">Nous vous remercions de votre participation à cette expérience scientifique. Notez que toutes les données récoltées durant cette session seront traitées de manière strictement anonyme et confidentielle</p>
+  <p>1) Conservez votre identifiant ci-dessous.<br>2) Répondez au premier questionnaire avec cet identifiant.<br>3) Revenez faire le Cyberball.<br>4) Répondez au second questionnaire avec le MÊME identifiant.</p>
+
+  <h2>Votre identifiant :</h2>
+  <div id="identifier" style="font-size:26px;font-weight:bold;margin:10px;"><span id="generatedID"></span></div>
+
+ <a href="https://questionnaires.univ-nantes.fr/index.php/732818?lang=fr"
+   target="_blank"
+   class="btn-questionnaire">
+  Répondre au questionnaire n°1
+</a>
+
+<style>
+  .btn-questionnaire {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  .btn-questionnaire:hover {
+    background-color: #0056b3;
+  }
+</style>
+    
+  <div id="consignes">
+    <p> Vous allez maintenant prendre part à un exercice de visualisation mentale sous la forme d'un jeu de balle virtuel. Vous jouerez avec deux autres participants connectés à distance. Lorsque vous recevez la balle, relancez-la simplement à la personne de votre choix en cliquant sur son avatar.<br> <br>Pendant toute la durée du jeu, essayez de vous représenter mentalement la situation. Une fois la partie terminée, il vous sera demandé de répondre à un court questionnaire.<p/>
+   <button id="goCyber">Passer au Cyberball</button>
+  </div>
+
+<h1 id="title" class="hidden">CYBERBALL</h1>
+<p id="instructions" class="hidden">Nous vous remercions de votre participation. Cliquez sur “Commencer”.</p>
+<button id="startBtn" class="hidden">Commencer</button>
+
+<div id="playerSelect" class="hidden"><h2>Choisissez votre personnage</h2></div>
+<div id="loading" class="hidden"><h2>Recherche des autres joueurs…</h2><p>Veuillez patienter…</p></div>
+<canvas id="canvas" width="600" height="420" class="hidden"></canvas>
+
+<div id="questionnaire" class="hidden">
+  <h2>Merci d'avoir joué !</h2>
+  <p>Veuillez répondre au questionnaire ci-dessous :</p>
+
+<a href="https://questionnaires.univ-nantes.fr/index.php/732818?lang=fr"
+   target="_blank"
+   class="btn-questionnaire">
+  Répondre au questionnaire n°2
+</a>
+
+<style>
+  .btn-questionnaire {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  .btn-questionnaire:hover {
+    background-color: #0056b3;
+  }
+</style>
 
 <h1 id="title">CYBERBALL</h1>
 <p id="instructions">Nous vous remercions de votre participation à cette expérience scientifique. Notez que toutes les données récoltées durant cette session seront traitées de manière strictement anonyme et confidentielle<br> <br>Vous allez maintenant prendre part à un exercice de visualisation mentale sous la forme d'un jeu de balle virtuel. Vous jouerez avec deux autres participants connectés à distance. Lorsque vous recevez la balle, relancez-la simplement à la personne de votre choix en cliquant sur son avatar.<br> <br>Pendant toute la durée du jeu, essayez de vous représenter mentalement la situation. Une fois la partie terminée, il vous sera demandé de répondre à un court questionnaire.<br> <br>Cliquez sur “Commencer”.</p>
@@ -47,56 +95,6 @@
 </div>
 
 <canvas id="canvas" width="600" height="420" class="hidden"></canvas>
-
-<div id="questionnaire" class="hidden">
-  <h2>Questionnaire rapide</h2>
-   <p>Appartenance</p>
-  <p>1. J'ai eu l'impression de faire un avec les autres joueurs :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>2. J'ai eu le sentiment d'appartenir au groupe pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>3. Je ne me suis pas senti(e) accepté(e) par les autres joueurs :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>4. Pendant le jeu, je me suis senti(e) connecté(e) à un ou plusieurs autres joueur :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>5. Je me suis senti(e) comme un(e) exclu(e) [ou "mis(e) à l'écart"] pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-   <p>Estime de soi</p>
-  <p>6. Jouer à ce jeu m'a fait me sentir peu sûr(e) de moi [ou "en insécurité"] :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>7. J'ai eu le sentiment d'avoir échoué pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>8. J'ai eu l'idée que j'avais la même valeur que les autres joueurs :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>9. J'étais préoccupé(e) par ce que les autres joueurs pensaient de moi pendant le jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>10. J'ai eu le sentiment que les autres joueurs ne m'appréciaient pas :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-   <p>Contrôle</p>
-  <p>11. J'avais le sentiment que je pouvais lancer [la balle/l'objet] aux autres joueurs aussi souvent que je le voulais :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>12. Je me sentais en contrôle du jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>13. J'avais l'idée que j'avais une incidence sur le déroulement du jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>14. J'avais le sentiment de pouvoir influencer la direction du jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>15. J'avais le sentiment que les autres joueurs décidaient de tout :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-   <p>Existence significative</p>
-  <p>16. Pendant le jeu, j'avais l'impression que ma présence n'était pas significative [ou "n'avait pas de sens"] :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>17. Je pense qu'il était inutile que je participe au jeu :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>18. J'avais le sentiment que ma présence pendant le jeu était importante :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>19. Je pense que ma participation au jeu a été utile :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  <p>20. J'ai cru que ma contribution au jeu ne comptait pas :</p>
-  <input id="q1" type="range" min="1" max="7" value="4"><br>
-  
-  <button id="finishBtn">Terminer</button>
-</div>
 
 <div id="debrief" class="hidden">
   <h2>Merci pour votre participation !</h2>
@@ -536,3 +534,4 @@ finishBtn.onclick = () => {
 </body>
 
 </html>
+
