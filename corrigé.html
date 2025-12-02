@@ -22,8 +22,23 @@
   <p>Veuillez également noter que la passation complète prend environ ??? minutes. Il est recommandé de la réaliser lorsque vous disposez de suffisamment de temps.</p>
   <p>1) Conservez votre identifiant ci-dessous.<br>2) Répondez au premier questionnaire avec cet identifiant.<br>3) Revenez faire le Cyberball.<br>4) Répondez au second questionnaire avec le MÊME identifiant.</p>
 
-  <h2>Votre identifiant :</h2>
-  <div id="identifier" style="font-size:26px;font-weight:bold;margin:10px;"><span id="generatedID"></span></div>
+ <h2>Votre identifiant :</h2>
+<div id="identifier" style="font-size:26px;font-weight:bold;margin:10px;">
+  <span id="generatedID"></span>
+</div>
+
+<script>
+// Génération d'un identifiant du type : E1234X
+function generateIdentifier() {
+    const numbers = Math.floor(1000 + Math.random() * 9000); // 4 chiffres
+    const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Lettre A-Z
+    return "E" + numbers + letter;
+}
+
+// Affichage dans le span
+document.getElementById("generatedID").textContent = generateIdentifier();
+</script>
+
 
   <a href="https://questionnaires.univ-nantes.fr/index.php/732818?lang=fr" target="_blank" class="btn-questionnaire">
     Répondre au questionnaire n°1
@@ -222,4 +237,5 @@ canvas.addEventListener("click", e=>{
 </script>
 </body>
 </html>
+
 
