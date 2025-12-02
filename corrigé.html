@@ -22,10 +22,8 @@
   <p>Veuillez également noter que la passation complète prend environ ??? minutes. Il est recommandé de la réaliser lorsque vous disposez de suffisamment de temps.</p>
   <p>1) Conservez votre identifiant ci-dessous.<br>2) Répondez au premier questionnaire avec cet identifiant.<br>3) Revenez faire le Cyberball.<br>4) Répondez au second questionnaire avec le MÊME identifiant.</p>
 
- <h2>Votre identifiant :</h2>
-<div id="identifier" style="font-size:26px;font-weight:bold;margin:10px;">
-  <span id="generatedID"></span>
-</div>
+  <h2>Votre identifiant :</h2>
+  <div id="identifier" style="font-size:26px;font-weight:bold;margin:10px;"><span id="generatedID"></span></div>
 
   <a href="https://questionnaires.univ-nantes.fr/index.php/732818?lang=fr" target="_blank" class="btn-questionnaire">
     Répondre au questionnaire n°1
@@ -58,23 +56,16 @@
 <div id="debrief" class="hidden"><h2>Merci pour votre participation !</h2></div>
 
 <script>
-// ---------------------- GÉNÉRATION ID (avec 'E' au début) ----------------------
-// Format retourné : E1234X  (E + 4 chiffres + 1 lettre)
-function generateIDWithE() {
+// ---------------------- GÉNÉRATION ID ----------------------
+function generateID() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const num = Math.floor(1000 + Math.random() * 9000); // 4 chiffres entre 1000 et 9999
+  const num = Math.floor(1000 + Math.random() * 9000);
   const letter = chars[Math.floor(Math.random() * chars.length)];
-  return 'E' + num + letter;
+  return num + letter;
 }
-
-// Si un ID est déjà stocké, on le réutilise ; sinon on en génère un nouveau
-const STORAGE_KEY = 'cyberballID';
-let id = localStorage.getItem(STORAGE_KEY);
-if (!id) {
-  id = generateIDWithE();
-  localStorage.setItem(STORAGE_KEY, id);
-}
+const id = generateID();
 document.getElementById('generatedID').textContent = id;
+localStorage.setItem('cyberballID', id);
 
 // ---------------------- ÉLÉMENTS ----------------------
 const goCyber = document.getElementById('goCyber');
@@ -231,7 +222,4 @@ canvas.addEventListener("click", e=>{
 </script>
 </body>
 </html>
-
-
-
-
+ 
