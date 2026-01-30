@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -61,7 +62,7 @@ function generateID() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const num = Math.floor(1000 + Math.random() * 9000); // 4 chiffres
   const letter = chars[Math.floor(Math.random() * chars.length)]; // 1 lettre finale
-  return 'I' + num + letter; // ajoute le préfixe E
+  return 'E' + num + letter; // ajoute le préfixe E
 }
 
 const id = generateID();
@@ -81,11 +82,7 @@ const ctx = canvas.getContext('2d');
 
 // ---------------------- NAVIGATION ----------------------
 goCyber.onclick = () => {
-  document.getElementById('welcome').classList.add('hidden');
-  title.classList.remove('hidden');
-  instructions.classList.remove('hidden');
-  instructions.textContent = "Nous vous remercions de votre participation. Cliquez sur 'Commencer'.";
-  startBtn.classList.remove('hidden');
+  window.open(window.location.href + "#cyberball", "_blank");
 };
 
 startBtn.onclick = () => {
@@ -96,7 +93,14 @@ startBtn.onclick = () => {
   etatJeu = "select";
   canvas.classList.remove("hidden");
 };
-
+  
+if (window.location.hash === "#cyberball") {
+  document.getElementById('welcome').classList.add('hidden');
+  title.classList.remove('hidden');
+  instructions.classList.remove('hidden');
+  instructions.textContent = "Nous vous remercions de votre participation. Cliquez sur 'Commencer'.";
+  startBtn.classList.remove('hidden');
+}
 // ---------------------- PERSONNAGES ----------------------
 const allCharacters = [
   { name: "Personnage 1", skin: "#f2d3b1", hair: "#7a4a1e", shirt: "#e6e6e6", pants: "#555" },
@@ -119,7 +123,9 @@ let current = 0;
 let hasBall = false;
 let throws = 0;
 const TOTAL_THROWS = 20;
-const EXCLUSION_RATE = 0.5;
+const PASSES_TO_SELF = 4;
+let selfPassesDone = 0;
+let otherPassesDone = 0;
 const THROW_DELAY = 1200;
 
 // ---------------------- DESSIN ----------------------
@@ -168,12 +174,38 @@ function animateThrow(from,to,callback){
 // ---------------------- LOGIQUE ----------------------
 function nextThrow(){
   throws++;
-  if(throws>TOTAL_THROWS){ etatJeu="end"; canvas.classList.add("hidden"); questionnaire.classList.remove("hidden"); return; }
-  if(players[current].isSelf){ hasBall=true; return; }
-  hasBall=false;
-  const passToYou=Math.random()>EXCLUSION_RATE;
-  let to=passToYou?1:(current===0?2:0);
-  animateThrow(current,to,()=>{ if(to===1) hasBall=true; setTimeout(nextThrow, hasBall?0:THROW_DELAY); });
+
+  if (throws > TOTAL_THROWS) {
+    etatJeu = "end";
+    canvas.classList.add("hidden");
+    questionnaire.classList.remove("hidden");
+    return;
+  }
+
+  // Si c'est au joueur
+  if (players[current].isSelf) {
+    hasBall = true;
+    return;
+  }
+
+  hasBall = false;
+
+  let to;
+
+  // Forcer exactement 4 passes vers le joueur
+  if (selfPassesDone < PASSES_TO_SELF) {
+    to = 1;
+    selfPassesDone++;
+  } else {
+    // Passes entre les deux autres joueurs
+    to = (current === 0 ? 2 : 0);
+    otherPassesDone++;
+  }
+
+  animateThrow(current, to, () => {
+    if (to === 1) hasBall = true;
+    setTimeout(nextThrow, hasBall ? 0 : THROW_DELAY);
+  });
 }
 
 function lancerJeu(selectedIndex){
@@ -222,7 +254,8 @@ canvas.addEventListener("click", e=>{
 });
 </script>
 </body>
+
 </html>
- 
+
 
 
