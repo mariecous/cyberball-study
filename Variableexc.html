@@ -172,9 +172,10 @@ function animateThrow(from,to,callback){
 }
 
 // ---------------------- LOGIQUE ----------------------
-function nextThrow(){
+function nextThrow() {
   throws++;
 
+  // Fin du jeu
   if (throws > TOTAL_THROWS) {
     etatJeu = "end";
     canvas.classList.add("hidden");
@@ -182,28 +183,34 @@ function nextThrow(){
     return;
   }
 
-  // Si c'est au joueur
+  // Si c'est au tour du joueur humain de jouer
   if (players[current].isSelf) {
     hasBall = true;
     return;
   }
 
   hasBall = false;
-
   let to;
 
-  // Forcer exactement 4 passes vers le joueur
-  if (selfPassesDone < PASSES_TO_SELF) {
-    to = 1;
+  // --- LOGIQUE ALÉATOIRE ---
+  let lancersRestants = TOTAL_THROWS - throws;
+  let passesJoueurRestantes = PASSES_TO_SELF - selfPassesDone;
+
+  // On calcule la probabilité d'envoyer au joueur
+  // Si on DOIT envoyer au joueur pour atteindre le quota, on le fait.
+  // Sinon, on utilise un facteur aléatoire.
+  if (passesJoueurRestantes > 0 && (Math.random() < 0.3 || passesJoueurRestantes > lancersRestants)) {
+    to = 1; // Envoi au joueur
     selfPassesDone++;
   } else {
-    // Passes entre les deux autres joueurs
+    // Envoi à l'autre bot
     to = (current === 0 ? 2 : 0);
-    otherPassesDone++;
   }
 
   animateThrow(current, to, () => {
-    if (to === 1) hasBall = true;
+    if (to === 1) {
+      hasBall = true;
+    }
     setTimeout(nextThrow, hasBall ? 0 : THROW_DELAY);
   });
 }
