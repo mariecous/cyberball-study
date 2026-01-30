@@ -15,191 +15,169 @@
 
 <body>
 
-<!-- ---------------------- PAGE D'ACCUEIL ---------------------- -->
+<!-- ====================== PAGE D'ACCUEIL ====================== -->
 <div id="welcome">
   <h1>Bienvenue dans l'étude Cyberball !</h1>
-  <p>Nous vous remercions de votre participation à cette expérience scientifique. Notez que toutes les données récoltées durant cette session seront traitées de manière strictement anonyme et confidentielle</p>
-  <p>Veuillez également noter que la passation complète prend environ ??? minutes. Il est recommandé de la réaliser lorsque vous disposez de suffisamment de temps.</p>
-  <p>1) Conservez votre identifiant ci-dessous.<br>2) Répondez au premier questionnaire avec cet identifiant.<br>3) Revenez faire le Cyberball.<br>4) Répondez au second questionnaire avec le MÊME identifiant.</p>
+  <p>Cette étude est strictement anonyme et confidentielle.</p>
 
   <h2>Votre identifiant :</h2>
-  <div id="identifier" style="font-size:26px;font-weight:bold;margin:10px;"><span id="generatedID"></span></div>
+  <div style="font-size:26px;font-weight:bold;"><span id="generatedID"></span></div>
 
   <a href="https://questionnaires.univ-nantes.fr/index.php/732818?lang=fr" target="_blank" class="btn-questionnaire">
     Répondre au questionnaire n°1
   </a>
 
-  <div id="consignes">
-    <p>Vous allez maintenant prendre part à un exercice de visualisation mentale sous la forme d'un jeu de balle virtuel. Vous jouerez avec deux autres participants connectés à distance. Lorsque vous recevez la balle, relancez-la simplement à la personne de votre choix en cliquant sur son avatar.<br> <br>Pendant toute la durée du jeu, essayez de vous représenter mentalement la situation. Une fois la partie terminée, il vous sera demandé de répondre à un deuxième court questionnaire.<p/>
-    <button id="goCyber">Passer au Cyberball</button>
-  </div>
+  <p>Après le questionnaire, cliquez ci-dessous pour lancer le Cyberball.</p>
+  <button id="goCyber">Passer au Cyberball</button>
 </div>
 
-<!-- ---------------------- CYBERBALL ---------------------- -->
+<!-- ====================== CYBERBALL ====================== -->
 <h1 id="title" class="hidden">CYBERBALL</h1>
-<p id="instructions" class="hidden"></p>
+<p id="instructions" class="hidden">Cliquez sur « Commencer ».</p>
 <button id="startBtn" class="hidden">Commencer</button>
 
 <div id="playerSelect" class="hidden"><h2>Choisissez votre personnage</h2></div>
-<div id="loading" class="hidden"><h2>Recherche des autres joueurs…</h2><p>Veuillez patienter…</p></div>
+<div id="loading" class="hidden"><h2>Connexion aux autres joueurs…</h2></div>
 <canvas id="canvas" width="600" height="420" class="hidden"></canvas>
 
-<!-- ---------------------- QUESTIONNAIRE FINAL ---------------------- -->
+<!-- ====================== QUESTIONNAIRE FINAL ====================== -->
 <div id="questionnaire" class="hidden">
-  <h2>Merci d'avoir joué !</h2>
-  <p>Veuillez répondre au questionnaire ci-dessous :</p>
+  <h2>Merci d'avoir joué</h2>
   <a href="https://questionnaires.univ-nantes.fr/index.php/469666?lang=fr" target="_blank" class="btn-questionnaire">
     Répondre au questionnaire n°2
   </a>
 </div>
 
-<div id="debrief" class="hidden"><h2>Merci pour votre participation !</h2></div>
-
 <script>
-// ---------------------- GÉNÉRATION ID ----------------------
+// ====================== ID ======================
 function generateID() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const num = Math.floor(1000 + Math.random() * 9000); // 4 chiffres
-  const letter = chars[Math.floor(Math.random() * chars.length)]; // 1 lettre finale
-  return 'E' + num + letter; // ajoute le préfixe E
+  return "E" + Math.floor(1000 + Math.random() * 9000) + String.fromCharCode(65 + Math.floor(Math.random() * 26));
 }
-
 const id = generateID();
-document.getElementById('generatedID').textContent = id;
-localStorage.setItem('cyberballID', id);
+document.getElementById("generatedID").textContent = id;
+localStorage.setItem("cyberballID", id);
 
-// ---------------------- ÉLÉMENTS ----------------------
-const goCyber = document.getElementById('goCyber');
-const startBtn = document.getElementById('startBtn');
-const instructions = document.getElementById('instructions');
-const title = document.getElementById('title');
-const playerSelect = document.getElementById('playerSelect');
-const loading = document.getElementById('loading');
-const questionnaire = document.getElementById('questionnaire');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-
-// ---------------------- NAVIGATION ----------------------
-goCyber.onclick = () => {
+// ====================== NAVIGATION ======================
+document.getElementById("goCyber").onclick = () => {
   window.open(window.location.href + "#cyberball", "_blank");
 };
 
-startBtn.onclick = () => {
-  instructions.classList.add('hidden');
-  startBtn.classList.add('hidden');
-  playerSelect.classList.remove('hidden');
-  drawSelectionScreen();
-  etatJeu = "select";
-  canvas.classList.remove("hidden");
-};
-  
 if (window.location.hash === "#cyberball") {
-  document.getElementById('welcome').classList.add('hidden');
-  title.classList.remove('hidden');
-  instructions.classList.remove('hidden');
-  instructions.textContent = "Nous vous remercions de votre participation. Cliquez sur 'Commencer'.";
-  startBtn.classList.remove('hidden');
+  document.getElementById("welcome").classList.add("hidden");
+  document.getElementById("title").classList.remove("hidden");
+  document.getElementById("instructions").classList.remove("hidden");
+  document.getElementById("startBtn").classList.remove("hidden");
 }
-// ---------------------- PERSONNAGES ----------------------
-const allCharacters = [
-  { name: "Personnage 1", skin: "#f2d3b1", hair: "#7a4a1e", shirt: "#e6e6e6", pants: "#555" },
-  { name: "Personnage 2", skin: "#f2d3b1", hair: "#c85a50", shirt: "#f7d87f", pants: "#f7d87f" },
-  { name: "Personnage 3", skin: "#b88a65", hair: "#3f332a", shirt: "#7fc8f7", pants: "#666" },
-  { name: "Personnage 4", skin: "#9a6a4a", hair: "#3f332a", shirt: "#c85a50", pants: "#333" },
-  { name: "Personnage 5", skin: "#f2d3b1", hair: "#777", shirt: "#e86a5d", pants: "#5a4a42" }
-];
 
-let players = [];
-let playerPositions = [
-  { x:100, y:260, isSelf:false, displayName:"Joueur 1" },
-  { x:300, y:120, isSelf:true, displayName:"Vous" },
-  { x:500, y:260, isSelf:false, displayName:"Joueur 2" }
-];
+// ====================== ELEMENTS ======================
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const startBtn = document.getElementById("startBtn");
+const playerSelect = document.getElementById("playerSelect");
+const loading = document.getElementById("loading");
+const questionnaire = document.getElementById("questionnaire");
 
-let ball = { x:-100, y:-100 };
-let etatJeu = "start";
-let current = 0;
-let hasBall = false;
-let throws = 0;
+// ====================== PARAMÈTRES EXPÉRIMENTAUX ======================
 const TOTAL_THROWS = 20;
 const PASSES_TO_SELF = 4;
-let selfPassesDone = 0;
-let otherPassesDone = 0;
 const THROW_DELAY = 1200;
 
-// ---------------------- DESSIN ----------------------
-function drawCharacter(p) {
-  ctx.save(); ctx.translate(p.x, p.y);
-  ctx.fillStyle = p.shirt; ctx.fillRect(-20,0,40,55);
-  ctx.fillStyle = p.skin; ctx.beginPath(); ctx.arc(0,-28,18,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = p.hair; ctx.beginPath(); ctx.arc(0,-35,18,Math.PI,Math.PI*2); ctx.fill();
-  ctx.restore();
-  ctx.font="14px sans-serif"; ctx.fillStyle="#111";
-  ctx.fillText(p.displayName||p.name, p.x - (ctx.measureText(p.displayName||p.name).width/2), p.y+110);
+let throws = 0;
+let throwPlan = [];
+let current = 0;
+let hasBall = false;
+let etatJeu = "start";
+
+let players = [];
+let ball = { x: -100, y: -100 };
+
+// ====================== PERSONNAGES ======================
+const characters = [
+  { skin:"#f2d3b1", hair:"#7a4a1e", shirt:"#e6e6e6" },
+  { skin:"#b88a65", hair:"#3f332a", shirt:"#7fc8f7" },
+  { skin:"#9a6a4a", hair:"#777", shirt:"#e86a5d" }
+];
+
+const positions = [
+  { x:100, y:260, isSelf:false, name:"Joueur 1" },
+  { x:300, y:120, isSelf:true,  name:"Vous" },
+  { x:500, y:260, isSelf:false, name:"Joueur 2" }
+];
+
+// ====================== PLAN DE PASSES ======================
+function generateThrowPlan() {
+  let plan = [];
+  for (let i = 0; i < PASSES_TO_SELF; i++) plan.push("self");
+  for (let i = 0; i < TOTAL_THROWS - PASSES_TO_SELF; i++) plan.push("other");
+
+  for (let i = plan.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [plan[i], plan[j]] = [plan[j], plan[i]];
+  }
+  return plan;
 }
 
-function drawSelectionScreen() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  let display = allCharacters.map((c,i)=>({...c, x:80+i*110, y:200}));
-  display.forEach(drawCharacter);
+// ====================== DESSIN ======================
+function drawCharacter(p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.fillStyle = p.shirt;
+  ctx.fillRect(-20, 0, 40, 55);
+  ctx.fillStyle = p.skin;
+  ctx.beginPath();
+  ctx.arc(0, -28, 18, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = p.hair;
+  ctx.beginPath();
+  ctx.arc(0, -35, 18, Math.PI, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.fillText(p.name, p.x - 20, p.y + 90);
 }
 
 function drawScene() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(etatJeu==="playing") {
-    players.forEach(drawCharacter);
-    ctx.beginPath();
-    ctx.arc(ball.x,ball.y,10,0,Math.PI*2); ctx.fillStyle="orange"; ctx.fill();
-  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  players.forEach(drawCharacter);
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, 10, 0, Math.PI * 2);
+  ctx.fillStyle = "orange";
+  ctx.fill();
 }
 
-// ---------------------- ANIMATION ----------------------
-function throwBall(from,to,callback){
-  const steps=30; let t=0;
-  let startX=players[from].x, startY=players[from].y+30;
-  let targetX=players[to].x, targetY=players[to].y+30;
-  let dx=(targetX-startX)/steps, dy=(targetY-startY)/steps;
-  ball.x=startX; ball.y=startY;
-  let move=setInterval(()=>{
-    ball.x+=dx; ball.y+=dy; drawScene();
-    if(++t>=steps){ clearInterval(move); ball.x=targetX; ball.y=targetY; current=to; drawScene(); callback(); }
-  },28);
+// ====================== ANIMATION ======================
+function animateThrow(from, to, callback) {
+  let steps = 30, t = 0;
+  let sx = players[from].x, sy = players[from].y + 30;
+  let tx = players[to].x, ty = players[to].y + 30;
+  let dx = (tx - sx) / steps, dy = (ty - sy) / steps;
+
+  let anim = setInterval(() => {
+    ball.x = sx + dx * t;
+    ball.y = sy + dy * t;
+    drawScene();
+    if (++t >= steps) {
+      clearInterval(anim);
+      current = to;
+      callback();
+    }
+  }, 25);
 }
 
-function animateThrow(from,to,callback){
-  throwBall(from,to,callback);
-}
-
-// ---------------------- LOGIQUE ----------------------
-function nextThrow(){
-  throws++;
-
-  if (throws > TOTAL_THROWS) {
-    etatJeu = "end";
+// ====================== LOGIQUE ======================
+function nextThrow() {
+  if (throws >= TOTAL_THROWS) {
     canvas.classList.add("hidden");
     questionnaire.classList.remove("hidden");
     return;
   }
 
-  // Si c'est au joueur
   if (players[current].isSelf) {
     hasBall = true;
     return;
   }
 
-  hasBall = false;
-
-  let to;
-
-  // Forcer exactement 4 passes vers le joueur
-  if (selfPassesDone < PASSES_TO_SELF) {
-    to = 1;
-    selfPassesDone++;
-  } else {
-    // Passes entre les deux autres joueurs
-    to = (current === 0 ? 2 : 0);
-    otherPassesDone++;
-  }
+  const instruction = throwPlan[throws++];
+  let to = instruction === "self" ? 1 : (current === 0 ? 2 : 0);
 
   animateThrow(current, to, () => {
     if (to === 1) hasBall = true;
@@ -207,54 +185,45 @@ function nextThrow(){
   });
 }
 
-function lancerJeu(selectedIndex){
-  etatJeu="loading";
-  canvas.classList.add("hidden");
+// ====================== DÉMARRAGE ======================
+startBtn.onclick = () => {
+  startBtn.classList.add("hidden");
   playerSelect.classList.add("hidden");
   loading.classList.remove("hidden");
 
-  players[0]={...playerPositions[0], ...allCharacters[2]};
-  players[2]={...playerPositions[2], ...allCharacters[4]};
-  players[1]={...playerPositions[1], ...allCharacters[selectedIndex]};
+  players = positions.map((p, i) => ({ ...p, ...characters[i] }));
+  throwPlan = generateThrowPlan();
+  throws = 0;
+  current = 0;
 
-  setTimeout(()=>{
+  setTimeout(() => {
     loading.classList.add("hidden");
     canvas.classList.remove("hidden");
-    etatJeu="playing";
-    current=0;
-    ball.x=players[current].x; ball.y=players[current].y+30;
-    drawScene(); setTimeout(nextThrow,1000);
-  },3000);
-}
+    ball.x = players[0].x;
+    ball.y = players[0].y + 30;
+    drawScene();
+    setTimeout(nextThrow, 1000);
+  }, 2000);
+};
 
-// ---------------------- CLICS ----------------------
-canvas.addEventListener("click", e=>{
-  const r=canvas.getBoundingClientRect();
-  const x=e.clientX-r.left, y=e.clientY-r.top;
+// ====================== CLIC JOUEUR ======================
+canvas.addEventListener("click", e => {
+  if (!hasBall) return;
+  const r = canvas.getBoundingClientRect();
+  const x = e.clientX - r.left;
+  const y = e.clientY - r.top;
 
-  if(etatJeu==="select"){
-    let charClicked=-1;
-    for(let i=0;i<5;i++){
-      let charX=80+i*110, charY=200;
-      if(x>charX-30 && x<charX+30 && y>charY-60 && y<charY+120){ charClicked=i; break; }
+  players.forEach((p, i) => {
+    if (!p.isSelf && Math.hypot(p.x - x, p.y - y) < 80) {
+      hasBall = false;
+      animateThrow(1, i, () => {
+        current = i;
+        setTimeout(nextThrow, THROW_DELAY);
+      });
     }
-    if(charClicked!==-1){ lancerJeu(charClicked); }
-    return;
-  }
-
-  if(etatJeu==="playing" && hasBall){
-    let targetIndex=null;
-    players.forEach((p,i)=>{ if(!p.isSelf && Math.hypot(p.x-x,p.y-y)<80) targetIndex=i; });
-    if(targetIndex!==null){
-      hasBall=false;
-      animateThrow(1,targetIndex,()=>{ current=targetIndex; setTimeout(nextThrow,THROW_DELAY); });
-    }
-  }
+  });
 });
 </script>
+
 </body>
-
 </html>
-
-
-
